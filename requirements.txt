@@ -47,3 +47,14 @@ scikit-learn
 # PyTorch (CPU Build)
 # =========================
 torch==2.2.2
+
+# =========================
+# PyTorch (GPU Build)
+# =========================
+
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# =========================
+# UI Interface
+# =========================
+streamlit
