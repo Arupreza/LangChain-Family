@@ -30,6 +30,7 @@ huggingface-hub
 accelerate
 safetensors
 sentencepiece
+sentence_transformers
 
 # =========================
 # Environment Variable Management
