@@ -22,7 +22,10 @@ pub struct ChatPromptTemplate {
 }
 
 impl ChatPromptTemplate {
-    pub fn new(parts: Vec<(Role, &str)>, input_variables: impl IntoIterator<Item = impl Into<String>>) -> Result<Self> {
+    pub fn new(
+        parts: Vec<(Role, &str)>,
+        input_variables: impl IntoIterator<Item = impl Into<String>>
+    ) -> Result<Self> {
         let parts = parts
             .into_iter()
             .map(|(role, text)| ChatMessageTemplate { role, text: text.to_string() })
@@ -80,8 +83,23 @@ impl ChatPromptTemplate {
     }
 }
 
+/// Escape into a Python-style single-quoted string, showing \n literally.
+fn python_repr_string(s: &str) -> String {
+    let mut r = String::new();
+    r.push('\'');
+    for ch in s.chars() {
+        match ch {
+            '\\' => r.push_str(r"\\"),
+            '\'' => r.push_str(r"\'"),
+            '\n' => r.push_str(r"\n"),
+            _ => r.push(ch),
+        }
+    }
+    r.push('\'');
+    r
+}
+
 fn main() -> Result<()> {
-    // Equivalent to your Python:
     // ChatPromptTemplate([
     //   ('system', 'You are a helpful {domain} expert'),
     //   ('human',  'Explain in simple terms, what is {topic}')
@@ -97,12 +115,19 @@ fn main() -> Result<()> {
     let vars = HashMap::from([("domain", "honey"), ("topic", "history")]);
     let prompt = chat_template.invoke(&vars)?; // Vec<(Role, String)>
 
-    // Print in a readable way (similar to printing the ChatPromptValue)
-    println!("--- RENDERED CHAT PROMPT ---");
+    // Build: messages=[SystemMessage(...), HumanMessage(...)]
+    let mut parts = Vec::new();
     for (role, text) in prompt {
-        let r = match role { Role::System => "system", Role::Human => "human" };
-        println!("{r}: {text}");
+        let (ty, content) = match role {
+            Role::System => ("SystemMessage", text),
+            Role::Human  => ("HumanMessage",  text),
+        };
+        parts.push(format!(
+            "{ty}(content={}, additional_kwargs={{}}, response_metadata={{}})",
+            python_repr_string(&content)
+        ));
     }
+    println!("messages=[{}]", parts.join(", "));
 
     Ok(())
 }
