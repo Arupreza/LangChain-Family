@@ -1,0 +1,9 @@
+[package]
+name = "langchain_rust_prompt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+llm-chain = "0.13"       # or the latest published version
+serde_json = "1.0"
+anyhow = "1.0"
