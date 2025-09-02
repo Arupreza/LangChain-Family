@@ -14,7 +14,7 @@ style_input = st.selectbox( "Select Explanation Style", ["Beginner-Friendly", "T
 
 length_input = st.selectbox( "Select Explanation Length", ["Short (1-2 paragraphs)", "Medium (3-5 paragraphs)", "Long (detailed explanation)"] )
 
-template = load_prompt('2_Prompts/template.json')
+template = load_prompt('2_Promts/template.json')
 
 
 
