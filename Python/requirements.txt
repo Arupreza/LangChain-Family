@@ -46,7 +46,7 @@ scikit-learn
 # =========================
 # PyTorch (CPU Build)
 # =========================
-torch==2.2.2
+#torch==2.2.2
 
 # =========================
 # PyTorch (GPU Build)
@@ -58,3 +58,4 @@ torch==2.2.2
 # UI Interface
 # =========================
 streamlit
+grandalf
