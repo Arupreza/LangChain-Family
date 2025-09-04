@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import ChatHuggingFace, HuggingFacePipeline
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -15,13 +15,27 @@ prompt2 = PromptTemplate(
     input_variables=['text']
 )
 
-model = ChatOpenAI()
+
+gemma_model = "google/gemma-2-2b-it"
+llama_model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+llm = HuggingFacePipeline.from_model_id(
+    model_id=gemma_model,
+    task="text-generation",
+    pipeline_kwargs=dict(
+        temperature=0.5,
+        max_new_tokens=100,
+        return_full_text=False,
+    )
+)
+
+model = ChatHuggingFace(llm=llm, model_id=gemma_model)
 
 parser = StrOutputParser()
 
 chain = prompt1 | model | parser | prompt2 | model | parser
 
-result = chain.invoke({'topic': 'Unemployment in India'})
+result = chain.invoke({'topic': 'Bangladesh Politics'})
 
 print(result)
 
