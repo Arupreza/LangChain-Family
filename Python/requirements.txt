@@ -3,6 +3,7 @@
 # =========================
 langchain
 langchain-core
+langchain-community
 
 # =========================
 # OpenAI Integration
@@ -59,3 +60,6 @@ scikit-learn
 # =========================
 streamlit
 grandalf
+pdfplumber
+pypdf
+beautifulsoup4
