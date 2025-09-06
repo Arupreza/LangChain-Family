@@ -30,7 +30,7 @@ from transformers import pipeline
 # -------------------------------
 # 0) Page config
 # -------------------------------
-st.set_page_config(page_title="Vector DB Q&A (Memory + Compression)", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="Vector Indexed DB Q&A App", page_icon="🧠", layout="wide")
 
 # -------------------------------
 # 1) Env + sidebar controls
