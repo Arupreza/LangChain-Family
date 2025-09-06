@@ -62,4 +62,8 @@ streamlit
 grandalf
 pdfplumber
 pypdf
-beautifulsoup4
+beautifulsoup4 
+chromadb
+tiktoken
+faiss-gpu
+hnswlib

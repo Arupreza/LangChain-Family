@@ -1,0 +1,29 @@
+Main Idea and Purpose
+The study aims to enhance traditional Q-learning algorithms by incorporating cognitive science principles, specifically subjective belief modeling, to imitate human-like decision-making. The motivation is to address limitations such as overestimation, robustness, and explainability in complex and uncertain environments, leading to improved adaptability and decision-making accuracy.
+
+Working Principle
+The core mechanism integrates Subjective Expected Utility Theory (SEUT) with cognitive clustering and belief updating. Agents maintain subjective belief distributions to estimate action expectations, use clustering to manage environmental complexity, and adapt decisions dynamically based on belief-driven preferences, thus closely mimicking human cognitive processes.
+
+Workflow
+Key steps involve initializing cognitive clusters, updating subjective belief distributions through Belief-Preference Decision Framework (BPDF), performing state-action decisions based on updated beliefs, and continually refining the decision-making strategy. This iterative approach blends short-term reward-driven behaviors with long-term informed strategies.
+
+Methodology
+The proposed Cognitive Belief-Driven Q-Learning (CBDQ) algorithm extends Q-learning by using belief-weighted averages for Q-value updates instead of maximal Q-values. Human cognitive clustering via K-means is employed for state-space simplification. A dynamic subjective belief updating mechanism continuously integrates new experiences with prior knowledge, improving decision stability.
+
+Datasets
+Experiments were conducted on various benchmark environments, including classic control tasks (Cartpole, Acrobot, CarRacing, LunarLander) and complex driving simulations (MetaDrive environments with varying road structures, traffic densities, and accident probabilities). These datasets enabled comprehensive testing of CBDQ's adaptability and robustness.
+
+Key Findings
+CBDQ consistently outperforms traditional Q-learning variants (DQN, Double DQN, Duel DQN) and PPO across diverse environments. The algorithm notably reduces Q-value overestimation, converges faster, and achieves higher cumulative rewards, particularly excelling in high-uncertainty and complex scenarios.
+
+Advantages
+CBDQ demonstrates improved robustness, faster convergence, reduced overestimation bias, and higher cumulative rewards. Its human-like decision-making capabilities allow it to dynamically adapt to changing conditions, ensuring smoother transitions and stable decision-making even under challenging circumstances.
+
+Limitations
+While the framework shows significant improvements, it relies on appropriate tuning of subjective belief parameters and cognitive cluster definitions. The need for human-derived prior knowledge for cluster initialization and potential complexity of parameter settings may pose practical challenges in real-world deployments.
+
+Comparison with Related Work
+Compared to Double Q-learning and ensemble-based methods, CBDQ provides more substantial bias reduction and better adaptability in complex environments. Unlike fixed-belief or Bayesian inference models, CBDQ's dynamic updating of subjective beliefs allows continuous adaptation, which closely mirrors human cognitive processes, offering greater robustness and flexibility.
+
+Conclusion
+CBDQ represents a significant advancement in reinforcement learning, integrating cognitive science insights to improve algorithmic adaptability and interpretability. Future research is suggested to explore extensions to continuous control domains and deeper emulation of human cognitive processes, highlighting the potential for interdisciplinary innovations in AI decision-making.

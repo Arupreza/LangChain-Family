@@ -1,0 +1,44 @@
+Main Idea and Purpose
+
+The primary objective of this study is to address the challenge of securing in-vehicle networks (IVNs), particularly Controller Area Network (CAN) buses, from cyber-attacks. Motivated by the difficulty in acquiring sufficient labeled data and dealing with class imbalance, the authors propose a semi-supervised intrusion detection system (IDS) that leverages both variational autoencoder (VAE) and adversarial reinforcement learning (AERL) to enhance the detection accuracy and minimize reliance on labeled data.
+Working Principle
+
+The study's core mechanism involves two main techniques: variational autoencoder (VAE) for unsupervised feature representation and adversarial environment reinforcement learning (AERL) for classification. VAE learns compact, meaningful representations of CAN data, transforming it into a lower-dimensional latent space. AERL employs two adversarial agents—an environment agent that selects challenging samples, and a classifier agent that learns from these adversarially chosen samples—to tackle the imbalanced dataset issue effectively.
+Workflow
+
+The key processes of the study include:
+
+    Data Preprocessing: One-hot encoding of CAN messages to facilitate computation and enhance statistical properties.
+
+    Representation Stage: Training a VAE to learn latent space representations of data.
+
+    Classification Stage: Utilizing adversarial reinforcement learning with two competing agents (classifier and environment) to classify CAN data effectively.
+
+    Pseudo-labeling: Implementing a teacher model trained on a subset of labeled data to generate pseudo-labels for unlabeled data, thereby creating an enriched training set.
+
+Methodology
+
+The proposed IDS employs a semi-supervised learning framework. Initially, VAE is used for unsupervised feature extraction, creating meaningful latent representations. Subsequently, an adversarial reinforcement learning architecture trains two agents simultaneously: an environment agent to select difficult-to-classify samples and a classifier agent to optimize intrusion classification performance, aided by pseudo-labeling for reducing reliance on labeled data.
+Datasets
+
+The study uses two publicly available datasets:
+
+    Car-hacking Dataset (CHD): Contains real-world CAN data with injection-based attacks (DoS, fuzzy, gear spoofing, RPM spoofing).
+
+    Real ORNL Automotive Dynamometer (ROAD) dataset: Offers more diverse attacks including fuzzy, correlated signal, maximum engine coolant temperature, maximum speedometer, reverse light off/on, presenting significant data imbalance challenges.
+
+Key Findings
+
+The proposed model demonstrates significant improvements over baseline approaches, achieving accuracy greater than 98.5% while using only 50% of labeled data. It effectively addresses data imbalance, achieving high F1 scores exceeding 0.9 for detecting unknown attacks. Experimental outcomes showed substantially reduced false alarm rates (<0.1% on CHD, <5% on ROAD), significantly outperforming existing methods.
+Advantages
+
+The primary advantages of this approach include high accuracy and efficiency in detecting both known and unknown attacks with limited labeled data. Additionally, the adversarial training strategy effectively addresses severe data imbalance, enhancing detection robustness. Its lightweight architecture ensures low latency, making it highly suitable for real-time application in resource-constrained IVNs.
+Limitations
+
+While the approach is effective, it still relies on initial computational resources for training VAE and reinforcement learning models. Moreover, accurately configuring adversarial reinforcement learning requires careful parameter tuning. Lastly, the method’s dependence on pseudo-labeling effectiveness is constrained by the initial labeled dataset’s quality and size.
+Comparison with Related Work
+
+Compared to other semi-supervised and supervised learning models like SVM, Decision Trees, DNN, CAAE, and contemporary approaches (ECF-IDS, LSF-IDM, CLUSTER), the proposed model consistently achieves comparable or superior performance in terms of accuracy, recall, precision, and significantly lower false alarm rates, especially under conditions of severe class imbalance and limited labeled data availability.
+Conclusion
+
+The study successfully demonstrates a semi-supervised IDS leveraging VAE and adversarial reinforcement learning as an efficient, accurate, and practical solution for securing IVNs. Future directions include further optimization using few-shot learning for reducing labeling costs, extending the model to additional attack types (such as masquerade and suspension attacks), and broader exploration into general internet anomaly detection scenarios.

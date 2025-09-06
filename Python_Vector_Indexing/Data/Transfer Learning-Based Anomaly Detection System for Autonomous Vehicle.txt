@@ -1,0 +1,48 @@
+Main Idea and Purpose
+
+The primary goal of this study is to develop an intelligent cyber threat detection system (ICTDS) for Connected and Autonomous Vehicles (CAVs), which utilizes transfer learning to detect cyberattacks targeting physical components via their network infrastructure. The motivation stems from the increased vulnerability of autonomous vehicles due to their connectivity and reliance on complex communication networks like the CAN bus, highlighting the importance of robust cybersecurity systems to ensure vehicle safety and reliability​
+
+.
+Working Principle
+
+The core mechanism is built upon transfer learning, where pre-trained convolutional neural networks (CNNs) such as ResNet-50, MobileNetV2, AlexNet, GoogLeNet, and YOLOV8 are adapted to classify anomalies indicating cyberattacks. The CAN communication protocol is integrated into an AV cyber–physical simulation to generate labeled datasets of normal and anomalous conditions, which the CNN models use for effective anomaly detection​
+
+.
+Workflow
+
+The study's workflow includes several key steps: firstly, developing an AV cyber-physical simulation incorporating the CAN protocol; secondly, generating a numerical dataset representing sensor readings under normal and compromised conditions; thirdly, converting numerical data into images for CNN model compatibility; fourthly, training and evaluating multiple pre-trained CNN models; finally, comparing model performances to select the optimal one based on metrics such as accuracy and F1-score​
+
+.
+Methodology
+
+The methodological approach employs a Simulink-based AV simulation that incorporates an Adaptive Cruise Control (ACC) system. This simulation is enhanced with a CAN communication network using Simulink's Vehicle Network Toolbox. Data generated from normal and compromised scenarios are reshaped into 2D matrices and saved as images. These images serve as input for training CNN models utilizing transfer learning, allowing the models to classify input as normal or anomalous effectively​
+
+.
+Datasets
+
+The dataset used in the study comprises 20,000 images evenly split between normal and anomalous cases. It was generated from a cyber–physical simulation involving self-driving car scenarios where false data injection attacks compromised sensor data, thereby simulating realistic cyber threats. This data underwent preprocessing steps to fit the requirements of CNN input dimensions for transfer learning​
+
+.
+Key Findings
+
+The primary discovery is that the YOLOV8 model significantly outperformed other pre-trained CNNs, achieving an exceptional F1-score and accuracy of 99.90%. All tested CNN models demonstrated high precision (100%), although there were slight variations in recall rates, indicating YOLOV8's superior ability to minimize misclassification errors of anomalous data​
+
+.
+Advantages
+
+The study highlights several advantages: superior detection accuracy, high precision, and robustness due to the adaptation of pre-trained CNNs. Transfer learning allows leveraging pre-existing knowledge, significantly reducing the required dataset size and computational resources. The developed framework is highly adaptable, scalable, and can be extended to various cyber-physical system applications​
+
+.
+Limitations
+
+Despite its strengths, the approach is limited by its reliance on simulated data, which may not fully capture the complexity and variability of real-world scenarios. Furthermore, misclassification, although minimal, indicates there is room for improvement in model recall, suggesting potential vulnerabilities in detecting certain anomalous conditions not extensively represented in training data​
+
+.
+Comparison with Related Work
+
+Compared to traditional intrusion detection systems employing artificial neural networks (ANN) or Bayesian approaches, the CNN-based models demonstrated superior accuracy and robustness. Specifically, the pre-trained CNNs used in this study, including YOLOV8, outperform other models, affirming the efficacy of transfer learning in enhancing detection capability and reducing computational demands​
+
+.
+Conclusion
+
+The study concludes that the developed intelligent intrusion detection system based on transfer learning and CNNs effectively detects cyber threats in autonomous vehicles, providing high accuracy and robustness. Future research is recommended to validate this model against real-world data and extend the framework to other critical CPS domains, such as smart grids and drones, enhancing overall cybersecurity measures in autonomous systems
