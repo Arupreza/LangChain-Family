@@ -1,4 +1,4 @@
-# Vector Indexed DB Q&A App
+# Vector DB Indexed Q&A App
 
 A Streamlit-based Retrieval-Augmented Generation (RAG) application that enables querying of pre-built FAISS vector indexes with advanced features including contextual compression and conversational memory.
 
