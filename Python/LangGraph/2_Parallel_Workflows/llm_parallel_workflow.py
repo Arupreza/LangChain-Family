@@ -1,114 +1,123 @@
+# ======================================================
+# Essay Evaluation Workflow with LangGraph + OpenAI
+# ======================================================
+# This workflow:
+# 1. Takes an essay as input.
+# 2. Evaluates it across three dimensions:
+#    - Language quality
+#    - Depth of analysis
+#    - Clarity of thought
+# 3. Collects all scores and feedback in parallel.
+# 4. Produces a final summary feedback + average score.
+#
+# Key Concepts:
+# - StateGraph → models the workflow (nodes + edges).
+# - Structured output → ensures clean JSON-style feedback & score.
+# - Annotated[list[int], operator.add] → merges scores from multiple nodes.
+# ======================================================
+
 # -------------------------------------------
 # 1. Imports
 # -------------------------------------------
-from langgraph.graph import StateGraph, START, END   # LangGraph workflow builder
-from langchain_openai import ChatOpenAI             # OpenAI wrapper for LangChain
-from typing import TypedDict, Annotated             # Typed state definitions
-from dotenv import load_dotenv                      # Load .env variables (API keys)
-from pydantic import BaseModel, Field               # Define structured outputs
-import operator                                     # For aggregation logic
+from langgraph.graph import StateGraph, START, END    # LangGraph workflow builder
+from langchain_openai import ChatOpenAI              # OpenAI wrapper for LangChain
+from typing import TypedDict, Annotated              # TypedDict for state, Annotated for merging lists
+from dotenv import load_dotenv                       # Loads .env (API keys, etc.)
+from pydantic import BaseModel, Field                # Schema definitions
+import operator                                      # Operator used for merging values
 
-# Load environment variables (ensures API keys are available)
+# Load environment variables (ensures OPENAI_API_KEY is available)
 load_dotenv()
 
 
 # -------------------------------------------
 # 2. Initialize LLM model
 # -------------------------------------------
-# Create an OpenAI model wrapper (gpt-4o-mini in this case)
-# Setting temperature=0 ensures deterministic / stable responses
+# gpt-4o-mini chosen for speed and cost efficiency.
+# temperature=0 makes it deterministic (stable outputs).
 model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
 # -------------------------------------------
 # 3. Define schema for structured output
 # -------------------------------------------
-# Each evaluation (language/analysis/clarity) should return feedback + score.
+# Each evaluation returns:
+# - feedback (text explanation)
+# - score (int 1–10)
 class EvaluationSchema(BaseModel):
     feedback: str = Field(description="Detailed feedback for the essay")
     score: int = Field(description="Score out of 10", ge=1, le=10)
 
-# Wrap the model so it always produces output matching EvaluationSchema
+# Wrap LLM → ensures evaluation responses always match schema
 structured_model = model.with_structured_output(EvaluationSchema)
 
 
 # -------------------------------------------
 # 4. Define workflow state
 # -------------------------------------------
+# This is the "memory" carried through the workflow.
 class LLMState(TypedDict):
-    essay: str                         # Input essay
-    language_feedback: str             # Feedback about language quality
-    analysis_feedback: str             # Feedback about depth of analysis
-    clarity_feedback: str              # Feedback about clarity of thought
-    overall_feedback: str              # Combined final feedback
-    individual_scores: Annotated[list[int], operator.add]
+    essay: str                         # Input essay text
+    language_feedback: str             # Feedback on language
+    analysis_feedback: str             # Feedback on analysis
+    clarity_feedback: str              # Feedback on clarity
+    overall_feedback: str              # Final combined summary feedback
+
     # `individual_scores` collects scores from multiple nodes in parallel.
-    # The `Annotated[list[int], operator.add]` tells LangGraph how to merge updates:
-    # instead of overwriting, it concatenates lists using `+`. For example:
-    #   Language node returns {"individual_scores": [7]}
-    #   Analysis node returns {"individual_scores": [8]}
-    #   Clarity node returns {"individual_scores": [6]}
-    # LangGraph merges them → [7] + [8] + [6] = [7, 8, 6]# Collect all scores
-    average_score: float               # Final average score
+    # The Annotated[...] + operator.add tells LangGraph to MERGE results
+    # instead of overwriting. Example:
+    #   Language → {"individual_scores": [7]}
+    #   Analysis → {"individual_scores": [8]}
+    #   Clarity  → {"individual_scores": [6]}
+    # Merged → [7, 8, 6]
+    individual_scores: Annotated[list[int], operator.add]
+
+    average_score: float               # Final averaged score
 
 
 # -------------------------------------------
 # 5. Node functions (evaluations)
 # -------------------------------------------
 
-# (a) Evaluate language quality
+# (a) Language quality
 def evaluate_language(state: LLMState):
-    prompt = (
-        f"Evaluate the language quality of the following essay and "
-        f"provide feedback and a score out of 10:\n{state['essay']}"
-    )
+    prompt = f"Evaluate the language quality of this essay and provide feedback and a score (1–10):\n{state['essay']}"
     output = structured_model.invoke(prompt)   # Returns EvaluationSchema
     return {
-        "language_feedback": output.feedback,  # Save feedback string
-        "individual_scores": [output.score]    # Append score to list
+        "language_feedback": output.feedback,
+        "individual_scores": [output.score]
     }
 
-
-# (b) Evaluate depth of analysis
+# (b) Depth of analysis
 def evaluate_analysis(state: LLMState):
-    prompt = (
-        f"Evaluate the depth of analysis of the following essay and "
-        f"provide feedback and a score out of 10:\n{state['essay']}"
-    )
+    prompt = f"Evaluate the depth of analysis of this essay and provide feedback and a score (1–10):\n{state['essay']}"
     output = structured_model.invoke(prompt)
     return {
         "analysis_feedback": output.feedback,
         "individual_scores": [output.score]
     }
 
-
-# (c) Evaluate clarity of thought
+# (c) Clarity of thought
 def evaluate_thought(state: LLMState):
-    prompt = (
-        f"Evaluate the clarity of thought of the following essay and "
-        f"provide feedback and a score out of 10:\n{state['essay']}"
-    )
+    prompt = f"Evaluate the clarity of thought in this essay and provide feedback and a score (1–10):\n{state['essay']}"
     output = structured_model.invoke(prompt)
     return {
         "clarity_feedback": output.feedback,
         "individual_scores": [output.score]
     }
 
-
-# (d) Final evaluation — summarize feedback + compute average score
+# (d) Final evaluation → Summarize feedbacks + compute average
 def final_evaluation(state: LLMState):
-    # Combine previous feedbacks into a single prompt
+    # Summarize feedbacks into a single paragraph
     prompt = (
-        f"Based on the following feedbacks, create a summarized overall feedback:\n"
-        f"Language feedback - {state['language_feedback']}\n"
-        f"Depth of analysis feedback - {state['analysis_feedback']}\n"
-        f"Clarity of thought feedback - {state['clarity_feedback']}"
+        f"Create a summary of the essay feedbacks:\n"
+        f"- Language feedback: {state['language_feedback']}\n"
+        f"- Analysis feedback: {state['analysis_feedback']}\n"
+        f"- Clarity feedback: {state['clarity_feedback']}"
     )
-
-    # Use normal model (not structured) for free-text summary
     overall_feedback = model.invoke(prompt).content
 
-    # Compute average score across evaluations
+    # Compute average score
     avg_score = sum(state["individual_scores"]) / len(state["individual_scores"])
 
     return {"overall_feedback": overall_feedback, "average_score": avg_score}
@@ -119,14 +128,14 @@ def final_evaluation(state: LLMState):
 # -------------------------------------------
 graph = StateGraph(LLMState)
 
-# Add nodes (processing steps)
+# Add nodes
 graph.add_node("evaluate_language", evaluate_language)
 graph.add_node("evaluate_analysis", evaluate_analysis)
 graph.add_node("evaluate_thought", evaluate_thought)
 graph.add_node("final_evaluation", final_evaluation)
 
 # Define execution flow:
-# Start → run all 3 evaluations (parallelizable) → final evaluation → End
+# Start → three parallel evaluations → final evaluation → End
 graph.add_edge(START, "evaluate_language")
 graph.add_edge(START, "evaluate_analysis")
 graph.add_edge(START, "evaluate_thought")
@@ -179,6 +188,10 @@ initial_state = {"essay": essay2}
 # Run workflow
 result = workflow.invoke(initial_state)
 
-# Print results
-print("Final Feedback:", result["overall_feedback"])
-print("Average Score:", result["average_score"])
+# -------------------------------------------
+# 8. Print Results
+# -------------------------------------------
+print("=== Final Feedback ===")
+print(result["overall_feedback"])
+print("\n=== Average Score ===")
+print(result["average_score"])
